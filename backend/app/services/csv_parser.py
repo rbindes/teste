@@ -1,6 +1,5 @@
 import csv
 import io
-import re
 from datetime import datetime, date
 
 from app.schemas.models import TransactionPreview

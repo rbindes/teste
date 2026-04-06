@@ -1,7 +1,7 @@
 import uuid
 from datetime import date, datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 # --- Auth ---

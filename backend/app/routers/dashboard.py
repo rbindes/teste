@@ -2,7 +2,7 @@ import uuid
 from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select, func, case, extract, and_
+from sqlalchemy import select, func, case, extract
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
