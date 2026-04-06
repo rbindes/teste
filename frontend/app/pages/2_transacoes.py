@@ -30,19 +30,28 @@ def api_patch(path, json_data):
 st.title("📋 Transações")
 
 # Filters
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 start_date = col1.date_input("De", date.today().replace(day=1))
 end_date = col2.date_input("Até", date.today())
 
-# Fetch accounts and categories for filters
+# Fetch accounts, categories and household members for filters
 accounts = api_get("/api/accounts")
 categories = api_get("/api/transactions/categories")
 
+# Build owner filter from accounts
+owner_ids = list({a["owner_id"] for a in accounts})
+owner_names = {}
+for a in accounts:
+    if a["owner_id"] not in owner_names:
+        owner_names[a["owner_id"]] = a["name"].split(" - ")[-1].strip() if " - " in a["name"] else a["owner_id"][:8]
+
 account_options = {"Todas": None} | {a["name"]: a["id"] for a in accounts}
 category_options = {"Todas": None} | {c["name"]: c["id"] for c in categories}
+person_options = {"Casal (todos)": None} | {owner_names.get(oid, oid[:8]): oid for oid in owner_ids}
 
 selected_account = col3.selectbox("Conta", list(account_options.keys()))
 selected_category = col4.selectbox("Categoria", list(category_options.keys()))
+selected_person = col5.selectbox("Titular", list(person_options.keys()))
 
 params = {
     "start_date": str(start_date),
@@ -53,6 +62,8 @@ if account_options[selected_account]:
     params["account_id"] = account_options[selected_account]
 if category_options[selected_category]:
     params["category_id"] = category_options[selected_category]
+if person_options[selected_person]:
+    params["owner_id"] = person_options[selected_person]
 
 transactions = api_get("/api/transactions", params)
 
